@@ -1,0 +1,39 @@
+{% extends 'certificates/base.html' %}
+
+{% block content %}
+<h1>Certificates</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Certificate Number</th>
+            <th>Printed</th>
+            <th>Printed By</th>
+            <th>Dispatched</th>
+            <th>Picked Up By</th>
+            <th>Print Date</th>
+            <th>Dispatched By</th>
+            <th>Dispatch Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for certificate in certificates %}
+        <tr>
+            <td>{{ certificate.certificate_number }}</td>
+            <td>{{ certificate.printed|yesno:"Yes,No" }}</td>
+            <td>{{ certificate.printed_by.username }}</td>
+            <td>{{ certificate.dispatched|yesno:"Yes,No" }}</td>
+            <td>{{ certificate.picked_by }}</td>
+            <td>{{ certificate.print_date }}</td>
+            <td>{{ certificate.dispatched_by }}</td>
+            <td>{{ certificate.dispatch_date }}</td>
+            <td>
+                {% if not certificate.dispatched %}
+                <a href="{% url 'dispatch_certificate' certificate.id %}" class="btn btn-primary">Dispatch</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
