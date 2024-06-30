@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import CertificateRecord, DailyRecord, DispatchRecord
 from django.contrib.auth.decorators import login_required
@@ -44,3 +45,20 @@ def add_certificate(request):
     else:
         form = CertificateRecordForm()
     return render(request, 'certificates/add_certificate.html', {'form': form})
+
+@login_required
+def dispatched_certificates(request):
+    if request.method == 'POST':
+        certificate_id = request.POST.get('certificate_id')
+        certificate = get_object_or_404(CertificateRecord, id=certificate_id)
+        daily_record, created = DailyRecord.objects.get_or_create(date=date.today())  
+        
+        if certificate not in daily_record.dispatched_certificates.all():
+            daily_record.dispatched_certificates.add(certificate)
+            daily_record.save()
+        
+        return redirect('dispatched_certificates')
+    
+    certificates = CertificateRecord.objects.filter(dispatched=True)
+    
+    return render(request, 'certificates/dispatched_certificates.html', {'certificates': certificates})
