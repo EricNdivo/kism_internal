@@ -10,16 +10,16 @@
             <th>Dispatched Phone</th>
             <th>Dispatched By</th>
             <th>Dispatched Date</th>
-        </th>
+        </tr>
     </thead>
     <tbody>
         {% for record in dispatch_records %}
         <tr>
-            <td>{{ record.certificate.certificate_number}}</td>
+            <td>{{ record.certificate.certificate_number }}</td>
             <td>{{ record.certificate.dispatched_to }}</td>
             <td>{{ record.certificate.dispatched_phone }}</td>
-            <td>{{ record.certificate.dispatched_by.username }}</td>
-            <td>{{ record.certificate.dispatched_date }}</td>
+            <td>{{ record.dispatched_by.username }}</td>
+            <td>{{ record.dispatch_date }}</td>
         </tr>
         {% endfor %}
     </tbody>

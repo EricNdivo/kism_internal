@@ -59,6 +59,7 @@ def dispatched_certificates(request):
         
         return redirect('dispatched_certificates')
     
-    certificates = CertificateRecord.objects.filter(dispatched=True)
+   
+    dispatch_records = DispatchRecord.objects.all()
     
-    return render(request, 'certificates/dispatched_certificates.html', {'certificates': certificates})
+    return render(request, 'certificates/dispatched_certificates.html', {'dispatch_records': dispatch_records})
