@@ -21,4 +21,4 @@ class CertificateRecordForm(forms.ModelForm):
 class DispatchForm(forms.ModelForm):
     class Meta:
         model = DispatchRecord
-        fields = ['certificate_number', 'dispatched_by']
+        fields = '__all__' 

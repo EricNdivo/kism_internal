@@ -9,17 +9,17 @@
             <th>Dispatched To</th>
             <th>Dispatched Phone</th>
             <th>Dispatched By</th>
-            <th>Dispatched Date</th>
+            <th>Dispatch Date</th>
         </tr>
     </thead>
     <tbody>
-        {% for record in dispatch_records %}
+        {% for dispatch_record in dispatch_records %}
         <tr>
-            <td>{{ record.certificate.certificate_number }}</td>
-            <td>{{ record.certificate.dispatched_to }}</td>
-            <td>{{ record.certificate.dispatched_phone }}</td>
-            <td>{{ record.dispatched_by.username }}</td>
-            <td>{{ record.dispatch_date }}</td>
+            <td>{{ dispatch_record.certificate.certificate_number }}</td>
+            <td>{{ dispatch_record.certificate.dispatched_to }}</td>
+            <td>{{ dispatch_record.certificate.dispatched_phone }}</td>
+            <td>{{ dispatch_record.dispatched_by.username }}</td>
+            <td>{{ dispatch_record.dispatch_date }}</td>
         </tr>
         {% endfor %}
     </tbody>
