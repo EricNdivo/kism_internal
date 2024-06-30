@@ -1,0 +1,28 @@
+{% extends 'certificates/base.html' %}
+
+{% block content %}
+
+<h1>Dispatched Certificates</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Certificate Number</th>
+            <th>Dispatched To</th>
+            <th>Dispatched Phone</th>
+            <th>Dispatched By</th>
+            <th>Dispatched Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in dispatch_records %}
+        <tr>
+            <td>{{ record.certificate.certificate_number}}</td>
+            <td>{{ record.certificate.dispatched_to }}</td>
+            <td>{{ record.certificate.dispatched_phone }}</td>
+            <td>{{ record.certificate.dispatched_by.username }}</td>
+            <td>{{ record.certficate.dispatched_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
