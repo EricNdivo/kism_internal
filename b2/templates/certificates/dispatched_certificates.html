@@ -1,6 +1,7 @@
 {% extends 'certificates/base.html' %}
 
 {% block content %}
+
 <h1>Dispatched Certificates</h1>
 <table class="table table-striped">
     <thead>
@@ -15,11 +16,11 @@
     <tbody>
         {% for dispatch_record in dispatch_records %}
         <tr>
-            <td>{{ dispatch_record.certificate.certificate_number }}</td>
-            <td>{{ dispatch_record.certificate.dispatched_to }}</td>
-            <td>{{ dispatch_record.certificate.dispatched_phone }}</td>
-            <td>{{ dispatch_record.dispatched_by.username }}</td>
-            <td>{{ dispatch_record.dispatch_date }}</td>
+            <td>{{ record.certificate.certificate_number}}</td>
+            <td>{{ record.certificate.dispatched_to }}</td>
+            <td>{{ record.certificate.dispatched_phone }}</td>
+            <td>{{ record.certificate.dispatched_by.username }}</td>
+            <td>{{ record.certficate.dispatched_date }}</td>
         </tr>
         {% endfor %}
     </tbody>
