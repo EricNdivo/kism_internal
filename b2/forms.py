@@ -9,7 +9,7 @@ class CertificateRecordForm(forms.ModelForm):
     dispatch_phone = forms.CharField(max_length=20, label='Dispatch Phone Number', required=False)
 
     class Meta:
-        model = CertificateRecord  # Update model reference
+        model = CertificateRecord 
         fields = ['certificate_number', 'printed', 'dispatched', 'picked_by', 'dispatched_to', 'dispatch_phone']
 
     def __init__(self, *args, **kwargs):

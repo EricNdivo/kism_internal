@@ -20,7 +20,6 @@ def dispatch_certificate(request, certificate_id):
         certificate.picked_by = request.POST.get('picked_by')
         certificate.save()
 
-        # Update daily record
         daily_record, created = DailyRecord.objects.get_or_create(date=timezone.now().date())
         daily_record.dispatched_certificates.add(certificate)
 
@@ -38,15 +37,10 @@ def add_certificate(request):
     if request.method == 'POST':
         form = CertificateRecordForm(request.POST)
         if form.is_valid():
-            certificate_number = form.cleaned_data['certificate_number']
-            
-            if CertificateRecord.objects.filter(certificate_number=certificate_number).exists():
-                form.add_error('certificate_number', 'Certificate record with this Certificate number already exists.')
-                return render(request, 'certificates/add_certificate.html', {'form': form})
-            
-            certificate = form.save()
+            certificate = form.save(commit=False)
+            certificate.printed_by = request.user
+            certificate.save()
             return redirect('certificate_list')
     else:
         form = CertificateRecordForm()
-    
     return render(request, 'certificates/add_certificate.html', {'form': form})
