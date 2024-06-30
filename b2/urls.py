@@ -6,4 +6,6 @@ urlpatterns = [
     path('dispatch/<int:certificate_id>/', views.dispatch_certificate, name='dispatch_certificate'),
     path('records/', views.daily_records, name='daily_records'),
     path('add/', views.add_certificate, name='add_certificate'),
+    path('dispatched/', views.dispatched_certificates, name='dispatched_certificates'),
+    
 ]
