@@ -4,7 +4,9 @@ from .models import CertificateRecord, DailyRecord, DispatchRecord
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .forms import CertificateRecordForm 
-
+from django.contrib.auth.models import User
+from django.contrib import messages
+import re
 @login_required
 def certificate_list(request):
     certificates = CertificateRecord.objects.all()
@@ -46,7 +48,6 @@ def add_certificate(request):
         form = CertificateRecordForm()
     return render(request, 'certificates/add_certificate.html', {'form': form})
 
-
 @login_required
 def dispatch_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
@@ -55,10 +56,32 @@ def dispatch_certificate(request, certificate_id):
         certificate.dispatched = True
         certificate.dispatched_by = request.user
         certificate.dispatch_date = timezone.now()
-        certificate.picked_by = request.POST.get('picked_by')
+        
+        picked_by_email = request.POST.get('picked_by_email')
+        picked_by_phone = request.POST.get('picked_by_phone')
+        picked_by_wells_fargo = request.POST.get('picked_by_wells_fargo')
+        
+        if picked_by_email:
+            certificate.picked_by = picked_by_email
+        elif picked_by_phone:
+            certificate.picked_by = picked_by_phone
+        elif picked_by_wells_fargo:
+            if picked_by_wells_fargo == "wellsfargo":
+                certificate.picked_by = "Wells Fargo"
+            else:
+                messages.error(request, f"Invalid selection for Wells Fargo.")
+                return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate})
+        else:
+            messages.error(request, "Please provide either an email address, phone number, or select Wells Fargo.")
+            return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate})
+        
         certificate.save()
         
-        dispatch_record = DispatchRecord(certificate=certificate, dispatched_by=request.user, dispatch_date=timezone.now())
+        dispatch_record = DispatchRecord(
+            certificate=certificate,
+            dispatched_by=request.user,
+            dispatch_date=timezone.now()
+        )
         dispatch_record.save()
         
         daily_record, created = DailyRecord.objects.get_or_create(date=timezone.now().date())
@@ -67,6 +90,7 @@ def dispatch_certificate(request, certificate_id):
         return redirect('certificate_list')
     
     return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate})
+
 
 @login_required
 def dispatched_certificates(request):
