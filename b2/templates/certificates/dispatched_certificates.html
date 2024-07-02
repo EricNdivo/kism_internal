@@ -11,16 +11,21 @@
             <th>Dispatched Phone</th>
             <th>Dispatched By</th>
             <th>Dispatch Date</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for dispatch_record in dispatch_records %}
         <tr>
-            <td>{{ record.certificate.certificate_number}}</td>
-            <td>{{ record.certificate.dispatched_to }}</td>
-            <td>{{ record.certificate.dispatched_phone }}</td>
-            <td>{{ record.certificate.dispatched_by.username }}</td>
-            <td>{{ record.certficate.dispatched_date }}</td>
+            <td>{{ dispatch_record.certificate.certificate_number }}</td>
+            <td>{{ dispatch_record.certificate.dispatched_to }}</td>
+            <td>{{ dispatch_record.certificate.dispatched_phone }}</td>
+            <td>{{ dispatch_record.dispatched_by.username }}</td>
+            <td>{{ dispatch_record.dispatch_date }}</td>
+            <td>
+                <a href="#" class="btn btn-primary btn-sm">Edit</a>
+                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

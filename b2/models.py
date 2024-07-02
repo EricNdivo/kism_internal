@@ -16,6 +16,7 @@ class CertificateRecord(models.Model):
 class DispatchRecord(models.Model):
     certificate = models.OneToOneField(CertificateRecord, on_delete=models.CASCADE)
     dispatched_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    dispatched_phone = models.CharField(max_length=15, blank=True)
     dispatch_date = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
