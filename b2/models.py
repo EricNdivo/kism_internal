@@ -5,8 +5,8 @@ class CertificateRecord(models.Model):
     certificate_number = models.CharField(max_length=100)
     printed = models.BooleanField(default=False)
     dispatched = models.BooleanField(default=False)
+    picked_by = models.CharField(max_length=100, blank=True, default='')  # Set default value here
     printed_by = models.ForeignKey(User, related_name='printed_certificates', on_delete=models.SET_NULL, null=True, blank=True)
-    picked_by = models.CharField(max_length=255, blank=True, null=True)
     print_date = models.DateTimeField(auto_now_add=True)
     dispatched_to = models.CharField(max_length=100, blank=True)
     dispatched_phone = models.CharField(max_length=15, blank=True)

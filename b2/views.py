@@ -63,14 +63,14 @@ def dispatch_certificate(request, certificate_id):
         
         if picked_by_email:
             certificate.picked_by = picked_by_email
+            certificate.dispatched_to = picked_by_email
         elif picked_by_phone:
             certificate.picked_by = picked_by_phone
-        elif picked_by_wells_fargo:
-            if picked_by_wells_fargo == "wellsfargo":
-                certificate.picked_by = "Wells Fargo"
-            else:
-                messages.error(request, f"Invalid selection for Wells Fargo.")
-                return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate})
+            certificate.dispatched_phone = picked_by_phone  
+            certificate.dispatched_to = picked_by_email  
+        elif picked_by_wells_fargo == "wellsfargo":
+            certificate.picked_by = "Wells Fargo"
+            certificate.dispatched_to = "Wells Fargo"
         else:
             messages.error(request, "Please provide either an email address, phone number, or select Wells Fargo.")
             return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate})

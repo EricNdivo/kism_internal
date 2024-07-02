@@ -2,29 +2,19 @@
 
 {% block content %}
 <h1>Dispatch Certificate {{ certificate.certificate_number }}</h1>
-
-{% if messages %}
-<div class="alert alert-danger">
-    {% for message in messages %}
-    <p>{{ message }}</p>
-    {% endfor %}
-</div>
-{% endif %}
-
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
         <label for="picked_by_email">Picked Up By (Email)</label>
-        <input type="email" class="form-control" id="picked_by_email" name="picked_by_email">
+        <input type="email" class="form-control" id="picked_by_email" name="picked_by_email" required>
     </div>
     <div class="form-group">
         <label for="picked_by_phone">Picked Up By (Phone)</label>
-        <input type="tel" class="form-control" id="picked_by_phone" name="picked_by_phone">
+        <input type="tel" class="form-control" id="picked_by_phone" name="picked_by_phone" required>
     </div>
     <div class="form-group">
         <label for="picked_by_wells_fargo">Picked Up By (Wells Fargo)</label>
         <select class="form-control" id="picked_by_wells_fargo" name="picked_by_wells_fargo">
-            <option value="">Select Wells Fargo</option>
             <option value="wellsfargo">Wells Fargo</option>
         </select>
     </div>
