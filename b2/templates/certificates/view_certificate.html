@@ -1,0 +1,76 @@
+{% extends 'certificates/base.html' %}
+
+{% load file_extension %}  <!-- Load custom template filters -->
+
+{% block content %}
+<h1>View Certificate</h1>
+
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <th>Certificate Number</th>
+            <td>{{ certificate.certificate_number }}</td>
+        </tr>
+        <tr>
+            <th>Printed</th>
+            <td>{{ certificate.printed|yesno:"Yes,No" }}</td>
+        </tr>
+        <tr>
+            <th>Dispatched</th>
+            <td>{{ certificate.dispatched|yesno:"Yes,No" }}</td>
+        </tr>
+        <tr>
+            <th>Printed By</th>
+            <td>
+                {% if certificate.printed_by %}
+                    {{ certificate.printed_by.username }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Picked up By</th>
+            <td>
+                {% if certificate.picked_by %}
+                    {{ certificate.picked_by }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Print Date</th>
+            <td>{{ certificate.print_date }}</td>
+        </tr>
+        <tr>
+            <th>Dispatched By</th>
+            <td>
+                {% if certificate.dispatched_by %}
+                    {{ certificate.dispatched_by.username }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+{% if certificate.uploaded_certificate %}
+    <h3>Preview</h3>
+    {% with certificate.uploaded_certificate.name as file_name %}
+        {% if file_name|is_pdf %}
+            <embed src="{{ certificate.uploaded_certificate.url }}" type="application/pdf" width="100%" height="600px" />
+        {% elif file_name|is_image %}
+            <img src="{{ certificate.uploaded_certificate.url }}" width="100%" />
+        {% else %}
+            <p>No preview available for this file type.</p>
+        {% endif %}
+    {% endwith %}
+{% else %}
+    <p>No preview available.</p>
+{% endif %}
+
+<a href="{% url 'print_certificate' certificate.id %}" class="btn btn-primary">Print Certificate</a>
+
+{% endblock %}
