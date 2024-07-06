@@ -2,24 +2,17 @@
 
 {% block content %}
 <h1>Add New Certificate</h1>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-group">
-        {{ form.certificate_number.label_tag }}
+        {{form.certificate_number.label_tag}}
         {{ form.certificate_number }}
     </div>
     <div class="form-group">
-        {{ form.printed.label_tag }}
-        {{ form.printed }}
+        {{form.CertificateFile.label_tag}}
+        {{ form.CertificateFile }}
     </div>
-    <div class="form-group">
-        {{ form.dispatched.label_tag }}
-        {{ form.dispatched }}
-    </div>
-    <div class="form-group">
-        {{ form.picked_by.label_tag }}
-        {{ form.picked_by }}
-    </div>
+   
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
 {% endblock %}

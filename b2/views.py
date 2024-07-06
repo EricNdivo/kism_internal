@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import CertificateRecord, DailyRecord, DispatchRecord
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from .forms import CertificateRecordForm, DispatchForm
+from .forms import CertificatesForm, DispatchForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django import forms
@@ -20,16 +20,13 @@ def daily_records(request):
 @login_required
 def add_certificate(request):
     if request.method == 'POST':
-        form = CertificateRecordForm(request.POST)
+        form = CertificatesForm(request.POST, request.FILES)
         if form.is_valid():
-            certificate = form.save(commit=False)
-            certificate.printed_by = request.user
-            certificate.save()
+            form.save()
             return redirect('certificate_list')
     else:
-        form = CertificateRecordForm()
-    return render(request, 'certificates/add_certificate.html', {'form': form})
-
+        form = CertificatesForm()
+    return render(request, 'certificates/add_certificate.html',{'form':form})
 
 @login_required
 def dispatch_certificate(request, certificate_id):
