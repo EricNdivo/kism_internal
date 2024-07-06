@@ -7,6 +7,10 @@ from .forms import CertificateRecordForm, DispatchForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django import forms
+from django.conf import settings
+import os
+
+
 @login_required
 def certificate_list(request):
     certificates = CertificateRecord.objects.all()
@@ -29,7 +33,6 @@ def add_certificate(request):
     else:
         form = CertificateRecordForm()
     return render(request, 'certificates/add_certificate.html', {'form': form})
-
 
 @login_required
 def dispatch_certificate(request, certificate_id):
@@ -80,3 +83,53 @@ def dispatch_certificate(request, certificate_id):
 def dispatched_certificates(request):
     dispatch_records = DispatchRecord.objects.all()
     return render(request, 'certificates/dispatched_certificates.html', {'dispatch_records': dispatch_records})
+
+
+def add_certificate(request):
+    if request.method == 'POST':
+        form = CertificateRecordForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('certificate_list') 
+    else:
+        form = CertificateRecordForm()
+    
+    return render(request, 'certificates/add_certificate.html', {'form': form})
+
+
+def view_certificate(request, certificate_id):
+    certificate = get_object_or_404(CertificateRecord, id=certificate_id)
+    return render(request, 'certificates/view_certificate.html', {'certificate': certificate})
+
+
+def search_certificates(request):
+    query = request.GET.get('q')
+    certificates = CertificateRecord.objects.filter(certificate_number__icontains=query)
+    return render(request, 'certificates/certificate_list.html',{'certificates':certificates, 'query': query})
+
+def view_certificate(request, certificate_id):
+    certificate = get_object_or_404(CertificateRecord, id=certificate_id)
+    
+    
+    context = {
+        'certificate': certificate,
+       
+    }
+    return render(request, 'certificates/view_certificate.html', context)
+
+def print_certificate(request, certificate_id):
+    certificate = get_object_or_404(CertificateRecord, id=certificate_id)
+     
+    context = {
+        'name': certificate.name,
+        'certificate_number': certificate.certificate_number,
+        'print_date': certificate.print_date.strftime('%Y-%m-%d'),
+        
+    }
+    pdf_bytes = generate_certificate(context)
+    
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{certificate.certificate_number}.pdf"'
+    
+    return response
+

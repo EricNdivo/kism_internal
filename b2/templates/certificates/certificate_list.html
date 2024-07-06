@@ -2,6 +2,14 @@
 
 {% block content %}
 <h1>Certificates</h1>
+
+<form method="get" action="{% url 'search_certificates' %}">
+    <div class="form-group">
+        <input type="text" name="q" placeholder="Search certificate">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -18,7 +26,7 @@
     <tbody>
         {% for certificate in certificates %}
         <tr>
-            <td>{{ certificate.certificate_number }}</td>
+            <td><a href="{% url 'view_certificate' certificate.id %}">{{ certificate.certificate_number }}</a></td>
             <td>{{ certificate.printed|yesno:"Yes,No" }}</td>
             <td>{{ certificate.dispatched|yesno:"Yes,No" }}</td>
             <td>
@@ -45,7 +53,10 @@
             </td>
             <td class="actions-cell">
                 {% if not certificate.dispatched %}
-                <a href="{% url 'dispatch_certificate' certificate.id %}" class="btn btn-primary">Dispatch</a>
+                <form method="post" action="{% url 'dispatch_certificate' certificate.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Dispatch</button>
+                </form>
                 {% endif %}
             </td>
         </tr>
