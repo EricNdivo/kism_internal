@@ -1,7 +1,5 @@
 {% extends 'certificates/base.html' %}
 
-{% load file_extension %}  <!-- Load custom template filters -->
-
 {% block content %}
 <h1>View Certificate</h1>
 
@@ -58,15 +56,13 @@
 
 {% if certificate.uploaded_certificate %}
     <h3>Preview</h3>
-    {% with certificate.uploaded_certificate.name as file_name %}
-        {% if file_name|is_pdf %}
-            <embed src="{{ certificate.uploaded_certificate.url }}" type="application/pdf" width="100%" height="600px" />
-        {% elif file_name|is_image %}
-            <img src="{{ certificate.uploaded_certificate.url }}" width="100%" />
-        {% else %}
-            <p>No preview available for this file type.</p>
-        {% endif %}
-    {% endwith %}
+    {% if is_pdf %}
+        <embed src="{{ certificate.uploaded_certificate.url }}" type="application/pdf" width="100%" height="600px" />
+    {% elif is_image %}
+        <img src="{{ certificate.uploaded_certificate.url }}" width="100%" />
+    {% else %}
+        <p>No preview available for this file type.</p>
+    {% endif %}
 {% else %}
     <p>No preview available.</p>
 {% endif %}

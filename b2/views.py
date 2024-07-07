@@ -109,14 +109,24 @@ def search_certificates(request):
 
 def view_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
-    
-    
+
+    # Check if the uploaded file is a PDF or an image
+    if certificate.uploaded_certificate:
+        file_name = certificate.uploaded_certificate.name.lower()
+        is_pdf = file_name.endswith('.pdf')
+        is_image = file_name.endswith(('.jpg', '.jpeg', '.png'))
+    else:
+        is_pdf = is_image = False
+
     context = {
         'certificate': certificate,
-       
+        'is_pdf': is_pdf,
+        'is_image': is_image,
     }
     return render(request, 'certificates/view_certificate.html', context)
 
+    
+    
 def print_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
      

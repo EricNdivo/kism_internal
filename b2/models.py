@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.db import models
+from django.contrib.auth.models import User
+
 class CertificateRecord(models.Model):
     certificate_number = models.CharField(max_length=100)
     printed = models.BooleanField(default=False)
@@ -12,8 +15,10 @@ class CertificateRecord(models.Model):
     dispatched_phone = models.CharField(max_length=15, blank=True)
     dispatched_by = models.ForeignKey(User, related_name='dispatched_certificates', on_delete=models.SET_NULL, null=True, blank=True)
     dispatch_date = models.DateTimeField(null=True, blank=True)
-    uploaded_file_path = models.CharField(max_length=255, blank=True)  
-    uploaded_certificate = models.FileField(upload_to='certificates/%Y/%m/%d/', blank=True, null=True)
+    uploaded_certificate = models.FileField(upload_to='certificates/%Y/%m/%d/', blank=True, default='path/to/default_certificate.pdf')  
+
+    def __str__(self):
+        return self.certificate_number
 
 class DispatchRecord(models.Model):
     certificate = models.OneToOneField(CertificateRecord, on_delete=models.CASCADE)
