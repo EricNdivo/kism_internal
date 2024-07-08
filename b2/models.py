@@ -29,10 +29,10 @@ class DailyRecord(models.Model):
 
     def __str__(self):
         return f"Records for {self.date}"
-class certificates(models.Model):
-    certificate_number = models.OneToOneField(CertificateRecord,on_delete=models.CASCADE)
-    certificate_file = models.FileField(upload_to='certificates/')
+class Certificates(models.Model):
+    certificate_number = models.CharField(max_length=100)
+    certificate_file = models.FileField(upload_to='certificates/pdfs')
     uploaded_at = models.DateTimeField(auto_now_add=True)
-
+    
     def __str__(self):
         return f'{self.certificate_number}'

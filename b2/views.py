@@ -1,8 +1,9 @@
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CertificateRecord, DailyRecord, DispatchRecord
+from .models import CertificateRecord, DailyRecord, DispatchRecord, Certificates
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.core.files.storage import FileSystemStorage
 from .forms import CertificatesForm, DispatchForm
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -16,8 +17,31 @@ def certificate_list(request):
 def daily_records(request):
     records = DailyRecord.objects.all()
     return render(request, 'certificates/daily_records.html', {'records': records})
+@login_required
+def certificate_upload(request):
+    if request.method == 'POST':
+        form = CertificatesForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save
+            return redirect('certlist')
+    else:
+        form = CertificatesForm()
+    return render(request, 'certificates/upload_certificate.html', {'form':form} )
+@login_required
+def certificatelistView(request):
+    certificates= Certificates.objects.all()
+    return render(request, 'certificates/certificatelist.html',{'certificates':certificates})
 
 @login_required
+def add_certificate(request):
+    context = {}
+    if request.method == 'POST':
+        uploaded_file = request.FILES['certificatefile']
+        fs = FileSystemStorage()
+        name = fs.save(uploaded_file.name, uploaded_file)
+        context['url'] = fs.url(name)
+    return render(request, 'certificates/add_certificate.html', context)
+'''@login_required
 def add_certificate(request):
     if request.method == 'POST':
         form = CertificatesForm(request.POST, request.FILES)
@@ -27,7 +51,7 @@ def add_certificate(request):
     else:
         form = CertificatesForm()
     return render(request, 'certificates/add_certificate.html',{'form':form})
-
+'''
 @login_required
 def dispatch_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)

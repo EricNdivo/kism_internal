@@ -1,0 +1,30 @@
+{% extends 'certificates/base.html' %}
+
+{% block content %}
+<h1>Certificates</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Certificate Number</th>
+            <th>CertificateFile</th>
+            <th>Upload Time</th>
+            <th class="actions-header">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for certificate in certificates %}
+        <tr>
+            <td>{{ certificate.certificate_number }}</td>
+            <td><a href="{{certificate.certificate_file.url}}"class="btn btn-primary"target="_blank">{{certificate.certificate_file}}</a></td>
+            <td>{{ certificate.uploaded_at}}</td>
+            
+            <td class="actions-cell">
+                {% if not certificate.dispatched %}
+                <a href="{% url 'dispatch_certificate' certificate.id %}" class="btn btn-primary">Dispatch</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

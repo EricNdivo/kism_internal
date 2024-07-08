@@ -9,7 +9,8 @@ urlpatterns = [
     path('records/', views.daily_records, name='daily_records'),
     path('add/', views.add_certificate, name='add_certificate'),
     path('dispatched/', views.dispatched_certificates, name='dispatched_certificates'),
-    
+    path('certs/', views.certificatelistView, name='certlist'),
+    path('upload/', views.certificate_upload, name='upload_certificate'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

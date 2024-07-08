@@ -4,15 +4,7 @@
 <h1>Add New Certificate</h1>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <!----<div class="form-group">
-        <label>Certificate Number:</label>
-        <input type="text" name="Certificate_number" >
-    </div>---------->
-    <div class="form-group">
-        <label>Upload Certificate:</label>
-        <input type="file" name="certificatefile" >
-    </div>
-   
+    {{form.as_p}} 
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
 {% if url %}
