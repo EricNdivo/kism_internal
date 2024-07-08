@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.db import models
+from django.contrib.auth.models import User
+
 class CertificateRecord(models.Model):
     certificate_number = models.CharField(max_length=100)
     printed = models.BooleanField(default=False)
@@ -14,12 +17,12 @@ class CertificateRecord(models.Model):
     dispatch_date = models.DateTimeField(null=True, blank=True)
     uploaded_file_path = models.CharField(max_length=255, blank=True)  
     uploaded_certificate = models.FileField(upload_to='certificates/%Y/%m/%d/', blank=True, null=True)
-    
     def is_pdf(self):
         return self.uploaded_certificate and self.uploaded_certificate.name.lower().endswith('.pdf')
     
     def is_image(self):
         return self.uploaded_certificate and self.uploaded_certificate.name.lower().endswith(('.jpg', '.jpeg', '.png'))
+    uploaded_certificate = models.FileField(upload_to='certificates/%Y/%m/%d/', blank=True, default='path/to/default_certificate.pdf')  
 
 class DispatchRecord(models.Model):
     certificate = models.OneToOneField(CertificateRecord, on_delete=models.CASCADE)
