@@ -2,7 +2,10 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+<<<<<<< HEAD
+=======
 
+>>>>>>> a8610f7ffd3deba03b5dde5c4398a390852e1b9f
 urlpatterns = [
     path('', views.certificate_list, name='certificate_list'),
     path('dispatch/<int:certificate_id>/', views.dispatch_certificate, name='dispatch_certificate'),
@@ -16,4 +19,8 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+<<<<<<< HEAD
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+=======
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+>>>>>>> a8610f7ffd3deba03b5dde5c4398a390852e1b9f

@@ -15,10 +15,14 @@ class CertificateRecord(models.Model):
     dispatched_phone = models.CharField(max_length=15, blank=True)
     dispatched_by = models.ForeignKey(User, related_name='dispatched_certificates', on_delete=models.SET_NULL, null=True, blank=True)
     dispatch_date = models.DateTimeField(null=True, blank=True)
+    uploaded_file_path = models.CharField(max_length=255, blank=True)  
+    uploaded_certificate = models.FileField(upload_to='certificates/%Y/%m/%d/', blank=True, null=True)
+    def is_pdf(self):
+        return self.uploaded_certificate and self.uploaded_certificate.name.lower().endswith('.pdf')
+    
+    def is_image(self):
+        return self.uploaded_certificate and self.uploaded_certificate.name.lower().endswith(('.jpg', '.jpeg', '.png'))
     uploaded_certificate = models.FileField(upload_to='certificates/%Y/%m/%d/', blank=True, default='path/to/default_certificate.pdf')  
-
-    def __str__(self):
-        return self.certificate_number
 
 class DispatchRecord(models.Model):
     certificate = models.OneToOneField(CertificateRecord, on_delete=models.CASCADE)
