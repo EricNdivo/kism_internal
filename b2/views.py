@@ -1,6 +1,6 @@
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CertificateRecord, DailyRecord, DispatchRecord
+from .models import CertificateRecord, DispatchRecord
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .forms import CertificateRecordForm, DispatchForm
@@ -15,11 +15,6 @@ import os
 def certificate_list(request):
     certificates = CertificateRecord.objects.all()
     return render(request, 'certificates/certificate_list.html', {'certificates': certificates})
-
-@login_required
-def daily_records(request):
-    records = DailyRecord.objects.all()
-    return render(request, 'certificates/daily_records.html', {'records': records})
 
 @login_required
 def add_certificate(request):
@@ -70,8 +65,6 @@ def dispatch_certificate(request, certificate_id):
             )
             dispatch_record.save()
             
-            daily_record, created = DailyRecord.objects.get_or_create(date=timezone.now().date())
-            daily_record.dispatched_certificates.add(certificate)
             
             return redirect('certificate_list')
     else:
