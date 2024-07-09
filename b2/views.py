@@ -48,12 +48,15 @@ def dispatch_certificate(request, certificate_id):
             if picked_by_email:
                 certificate.picked_by = picked_by_email
                 certificate.dispatched_to = picked_by_email
+                dispatch_phone = ''
             elif picked_by_phone:
                 certificate.picked_by = picked_by_phone
-                certificate.dispatched_phone = picked_by_phone
+                certificate.dispatch_phone = picked_by_phone
+                dispatch_phone = picked_by_phone
             elif picked_by_wells_fargo:
                 certificate.picked_by = "Wells Fargo"
                 certificate.dispatched_to = "Wells Fargo"
+                dispatch_phone = ''
             else:
                 messages.error(request, "Please provide either an email address, phone number, or select Wells Fargo.")
                 return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate, 'form': form})
@@ -66,6 +69,7 @@ def dispatch_certificate(request, certificate_id):
             dispatch_record = DispatchRecord(
                 certificate=certificate,
                 dispatched_by=request.user,
+                dispatch_phone=dispatch_phone,
                 dispatch_date=timezone.now()
             )
             dispatch_record.save()
@@ -79,6 +83,7 @@ def dispatch_certificate(request, certificate_id):
     
     return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate, 'form': form})
 
+
 @login_required
 def dispatched_certificates(request):
     dispatch_records = DispatchRecord.objects.all()
@@ -88,13 +93,25 @@ def dispatched_certificates(request):
 def add_certificate(request):
     if request.method == 'POST':
         form = CertificateRecordForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('certificate_list') 
+        certificate_number = request.POST.get('certificate_number')
+        uploaded_certificate = request.FILES.get('uploaded_certificate')
+
+        if CertificateRecord.objects.filter(certificate_number=certificate_number).exists():
+            messages.error(request, 'Certificate with this number already exists.')
+        elif not uploaded_certificate:
+            messages.error(request, 'Please upload a certificate.')
+        else:
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Certificate added successfully.')
+                return redirect('certificate_list')
+            else:
+                messages.error(request, 'Form is not valid.')
     else:
         form = CertificateRecordForm()
-    
+
     return render(request, 'certificates/add_certificate.html', {'form': form})
+
 
 
 def view_certificate(request, certificate_id):

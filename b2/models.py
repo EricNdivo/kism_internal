@@ -12,7 +12,6 @@ class CertificateRecord(models.Model):
     printed_by = models.ForeignKey(User, related_name='printed_certificates', on_delete=models.SET_NULL, null=True, blank=True)
     print_date = models.DateTimeField(auto_now_add=True)
     dispatched_to = models.CharField(max_length=100, blank=True)
-    dispatched_phone = models.CharField(max_length=15, blank=True)
     dispatched_by = models.ForeignKey(User, related_name='dispatched_certificates', on_delete=models.SET_NULL, null=True, blank=True)
     dispatch_date = models.DateTimeField(null=True, blank=True)
     uploaded_file_path = models.CharField(max_length=255, blank=True)  
@@ -27,7 +26,7 @@ class CertificateRecord(models.Model):
 class DispatchRecord(models.Model):
     certificate = models.OneToOneField(CertificateRecord, on_delete=models.CASCADE)
     dispatched_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    dispatched_phone = models.CharField(max_length=15, blank=True)
+    dispatch_phone = models.CharField(max_length=15, blank=True)
     dispatch_date = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
