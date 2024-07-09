@@ -31,11 +31,3 @@ class DispatchRecord(models.Model):
 
     def __str__(self):
         return self.certificate.certificate_number 
-
-class DailyRecord(models.Model):
-    date = models.DateField(auto_now_add=True)
-    printed_certificates = models.CharField(max_length=255, default='')  
-    dispatched_certificates = models.ManyToManyField(CertificateRecord, related_name='dispatched_daily_records')
-
-    def __str__(self):
-        return f"Records for {self.date}"
