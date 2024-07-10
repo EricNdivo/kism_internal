@@ -1,6 +1,6 @@
 from datetime import date
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CertificateRecord, DispatchRecord
+from .models import CertificateRecord, DispatchRecord, DailyRecord
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .forms import CertificateRecordForm, DispatchForm
@@ -9,7 +9,6 @@ from django.contrib import messages
 from django import forms
 from django.conf import settings
 import os
-
 
 @login_required
 def certificate_list(request):
@@ -29,6 +28,7 @@ def add_certificate(request):
         form = CertificateRecordForm()
     return render(request, 'certificates/add_certificate.html', {'form': form})
 
+
 @login_required
 def dispatch_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
@@ -43,15 +43,12 @@ def dispatch_certificate(request, certificate_id):
             if picked_by_email:
                 certificate.picked_by = picked_by_email
                 certificate.dispatched_to = picked_by_email
-                dispatch_phone = ''
             elif picked_by_phone:
                 certificate.picked_by = picked_by_phone
-                certificate.dispatch_phone = picked_by_phone
-                dispatch_phone = picked_by_phone
+                certificate.dispatched_phone = picked_by_phone
             elif picked_by_wells_fargo:
                 certificate.picked_by = "Wells Fargo"
                 certificate.dispatched_to = "Wells Fargo"
-                dispatch_phone = ''
             else:
                 messages.error(request, "Please provide either an email address, phone number, or select Wells Fargo.")
                 return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate, 'form': form})
@@ -64,24 +61,22 @@ def dispatch_certificate(request, certificate_id):
             dispatch_record = DispatchRecord(
                 certificate=certificate,
                 dispatched_by=request.user,
-                dispatch_phone=dispatch_phone,
+                dispatch_phone=certificate.dispatched_phone, 
                 dispatch_date=timezone.now()
             )
             dispatch_record.save()
             
-            
+            messages.success(request, 'Certificate dispatched successfully.')
             return redirect('certificate_list')
     else:
         form = DispatchForm()
     
     return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate, 'form': form})
 
-
 @login_required
 def dispatched_certificates(request):
     dispatch_records = DispatchRecord.objects.all()
     return render(request, 'certificates/dispatched_certificates.html', {'dispatch_records': dispatch_records})
-
 
 def add_certificate(request):
     if request.method == 'POST':
@@ -105,12 +100,9 @@ def add_certificate(request):
 
     return render(request, 'certificates/add_certificate.html', {'form': form})
 
-
-
 def view_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
     return render(request, 'certificates/view_certificate.html', {'certificate': certificate})
-
 
 def search_certificates(request):
     query = request.GET.get('q')
@@ -120,7 +112,6 @@ def search_certificates(request):
 def view_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
 
-    # Check if the uploaded file is a PDF or an image
     if certificate.uploaded_certificate:
         file_name = certificate.uploaded_certificate.name.lower()
         is_pdf = file_name.endswith('.pdf')
@@ -135,21 +126,33 @@ def view_certificate(request, certificate_id):
     }
     return render(request, 'certificates/view_certificate.html', context)
 
-    
-    
-def print_certificate(request, certificate_id):
-    certificate = get_object_or_404(CertificateRecord, id=certificate_id)
-     
-    context = {
-        'name': certificate.name,
-        'certificate_number': certificate.certificate_number,
-        'print_date': certificate.print_date.strftime('%Y-%m-%d'),
-        
-    }
-    pdf_bytes = generate_certificate(context)
-    
-    response = HttpResponse(pdf_bytes, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{certificate.certificate_number}.pdf"'
-    
-    return response
+@login_required
+def daily_records(request):
+    daily_records = DailyRecord.objects.all().order_by('-date')
+    return render(request, 'certificates/daily_records.html', {'daily_records': daily_records})
 
+@login_required
+def edit_dispatch(request, dispatch_id):
+    dispatch_record = get_object_or_404(DispatchRecord, id=dispatch_id)
+
+    if request.method == 'POST':
+        form = DispatchForm(request.POST, instance=dispatch_record)
+        if form.is_valid():
+            form.save()
+            return redirect('dispatched_certificates')
+    else:
+        form = DispatchForm(instance=dispatch_record)
+
+    return render(request, 'certificates/edit_dispatch.html', {'form': form})
+
+
+@login_required
+def delete_dispatch(request, dispatch_id):
+    dispatch_record = get_object_or_404(DispatchRecord, id=dispatch_id)
+
+    if request.method == 'POST':
+        dispatch_record.delete()
+        messages.success(request, "Dispatch record deleted successfully.")
+        return redirect('dispatched_certificates')
+
+    return render(request, 'certificates/confirm_delete_dispatch.html', {'dispatch_record': dispatch_record})

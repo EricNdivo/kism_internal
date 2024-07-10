@@ -12,6 +12,7 @@ class CertificateRecord(models.Model):
     printed_by = models.ForeignKey(User, related_name='printed_certificates', on_delete=models.SET_NULL, null=True, blank=True)
     print_date = models.DateTimeField(auto_now_add=True)
     dispatched_to = models.CharField(max_length=100, blank=True)
+    dispatched_phone = models.CharField(max_length=15, blank=True)
     dispatched_by = models.ForeignKey(User, related_name='dispatched_certificates', on_delete=models.SET_NULL, null=True, blank=True)
     dispatch_date = models.DateTimeField(null=True, blank=True)
     uploaded_file_path = models.CharField(max_length=255, blank=True)  
@@ -31,3 +32,11 @@ class DispatchRecord(models.Model):
 
     def __str__(self):
         return self.certificate.certificate_number 
+
+class DailyRecord(models.Model):
+    date = models.DateField(auto_now_add=True)
+    printed_certificates = models.ManyToManyField(CertificateRecord, related_name='printed_daily_records', blank=True)
+    dispatched_certificates = models.ManyToManyField(CertificateRecord, related_name='dispatched_daily_records', blank=True)
+
+    def __str__(self):
+        return f"Records for {self.date}"

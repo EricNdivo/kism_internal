@@ -23,8 +23,8 @@
             <td>{{ dispatch_record.dispatched_by.username }}</td>
             <td>{{ dispatch_record.dispatch_date }}</td>
             <td>
-                <a href="#" class="btn btn-primary btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                <a href="{% url 'edit_dispatch' dispatch_record.id %}" class="btn btn-primary btn-sm">Edit</a>
+                <a href="{% url 'delete_dispatch' dispatch_record.id %}" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
         {% endfor %}
