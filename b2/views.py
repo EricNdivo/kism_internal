@@ -126,7 +126,11 @@ def view_certificate(request, certificate_id):
 def search_certificates(request):
     query = request.GET.get('q')
     certificates = CertificateRecord.objects.filter(certificate_number__icontains=query)
-    return render(request, 'certificates/certificate_list.html',{'certificates':certificates, 'query': query})
+    
+    if not certificates:
+        messages.error(request, f'No certificates found for "{query}".')
+        
+    return render(request, 'certificates/certificate_list.html', {'certificates': certificates, 'query': query})
 
 @login_required
 def daily_records(request):
