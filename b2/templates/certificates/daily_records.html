@@ -2,7 +2,6 @@
 
 {% block content %}
 <h1>Daily Records</h1>
-
 <table class="table table-striped">
     <thead>
         <tr>
@@ -16,18 +15,14 @@
         <tr>
             <td>{{ record.date }}</td>
             <td>
-                <ul>
-                    {% for cert in record.printed_certificates.all %}
-                    <li>{{ cert.certificate_number }}</li>
-                    {% endfor %}
-                </ul>
+                {% for certificate in record.printed_certificates.all %}
+                    {{ certificate.certificate_number }}<br>
+                {% endfor %}
             </td>
             <td>
-                <ul>
-                    {% for cert in record.dispatched_certificates.all %}
-                    <li>{{ cert.certificate_number }}</li>
-                    {% endfor %}
-                </ul>
+                {% for certificate in record.dispatched_certificates.all %}
+                    {{ certificate.certificate_number }}<br>
+                {% endfor %}
             </td>
         </tr>
         {% endfor %}

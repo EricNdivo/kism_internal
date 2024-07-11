@@ -6,8 +6,10 @@ from django.db import models
 class CertificateRecordForm(forms.ModelForm):
     class Meta:
         model = CertificateRecord
-        fields = ['certificate_number', 'uploaded_certificate']
-
+        fields = ['certificate_number', 'uploaded_certificate', 'printed']
+        widgets = {
+            'printed': forms.Select(choices=[(True, 'Yes'), (False, 'No')])
+        }
 class DispatchForm(forms.ModelForm):
     picked_by_email = forms.EmailField(required=False)
     picked_by_phone = forms.CharField(max_length=15, required=False, label='Phone Number')

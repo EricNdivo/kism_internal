@@ -66,6 +66,10 @@ def dispatch_certificate(request, certificate_id):
             )
             dispatch_record.save()
             
+            today = timezone.now().date()
+            daily_record, created = DailyRecord.objects.get_or_create(date=today)
+            daily_record.dispatched_certificates.add(certificate)
+            
             messages.success(request, 'Certificate dispatched successfully.')
             return redirect('certificate_list')
     else:
@@ -109,23 +113,6 @@ def search_certificates(request):
     certificates = CertificateRecord.objects.filter(certificate_number__icontains=query)
     return render(request, 'certificates/certificate_list.html',{'certificates':certificates, 'query': query})
 
-def view_certificate(request, certificate_id):
-    certificate = get_object_or_404(CertificateRecord, id=certificate_id)
-
-    if certificate.uploaded_certificate:
-        file_name = certificate.uploaded_certificate.name.lower()
-        is_pdf = file_name.endswith('.pdf')
-        is_image = file_name.endswith(('.jpg', '.jpeg', '.png'))
-    else:
-        is_pdf = is_image = False
-
-    context = {
-        'certificate': certificate,
-        'is_pdf': is_pdf,
-        'is_image': is_image,
-    }
-    return render(request, 'certificates/view_certificate.html', context)
-
 @login_required
 def daily_records(request):
     daily_records = DailyRecord.objects.all().order_by('-date')
@@ -156,3 +143,15 @@ def delete_dispatch(request, dispatch_id):
         return redirect('dispatched_certificates')
 
     return render(request, 'certificates/confirm_delete_dispatch.html', {'dispatch_record': dispatch_record})
+
+@login_required
+def daily_records(request):
+    today = timezone.now().date()
+    daily_record, created = DailyRecord.objects.get_or_create(date=today)
+
+    context ={
+        'daily_record': daily_record,
+        'printed_certificates':  daily_record.printed_certificates.all(),
+        'dispatched_certificates': daily_record.dispatched_certificates.all(),
+    }
+    return render(request, 'certificates/daily_records.html', context)

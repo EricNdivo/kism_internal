@@ -9,9 +9,13 @@
         {{ form.certificate_number }}
     </div>
     <div class="form-group">
+        {{ form.printed.label_tag }}
+        {{ form.printed }}
+    </div>
+    <div class="form-group">
         <label for="certificate_file">Upload Certificate</label>
         <input type="file" name="uploaded_certificate" id="certificate_file" class="form-control-file">
-    </div>
+    </div> 
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
 {% endblock %}
