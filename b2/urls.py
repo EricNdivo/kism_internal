@@ -14,6 +14,7 @@ urlpatterns = [
     path('dispatch/edit/<int:dispatch_id>/', views.edit_dispatch, name='edit_dispatch'),
     path('dispatch/delete/<int:dispatch_id>/', views.delete_dispatch, name='delete_dispatch'),
     path('search-dispatched-certificates/', views.search_dispatched_certificates, name='search_dispatched_certificates'),
+    path('search_daily_records', views.search_daily_records, name='search_daily_records'),
 ]
 
 if settings.DEBUG:

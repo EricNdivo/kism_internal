@@ -133,7 +133,7 @@ def search_certificates(request):
         messages.error(request, f'Certificate Not Found.')
         
     return render(request, 'certificates/certificate_list.html', {'certificates': certificates, 'query': query})
-    
+
 def search_dispatched_certificates(request):
     query = request.GET.get('q')
 
@@ -146,6 +146,24 @@ def search_dispatched_certificates(request):
     }
 
     return render(request, 'certificates/dispatched_certificates.html', context)
+
+def search_daily_records(request):
+    query = request.GET.get('q', '').strip()
+    if query:
+        daily_records = DailyRecord.objects.filter(
+            dispatched_certificates__certificate_number__icontains=query
+        ).distinct()
+        debug_info= f"Query: {query}, Found records: {daily_records.count()}"
+    else:
+        daily_records = DailyRecord.objects.none()
+        debug_info = "No query provided."   
+    context = {
+        'daily_records': daily_records,
+        'query': query,
+        'debug_info': debug_info,
+    } 
+    return render(request, 'certificates/daily_records.html', context)
+
 @login_required
 def daily_records(request):
     daily_records = DailyRecord.objects.all().order_by('-date')
