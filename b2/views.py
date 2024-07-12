@@ -98,23 +98,24 @@ def dispatched_certificates(request):
     dispatch_records = DispatchRecord.objects.all()
     return render(request, 'certificates/dispatched_certificates.html', {'dispatch_records': dispatch_records})
 
+@login_required
 def add_certificate(request):
     if request.method == 'POST':
         form = CertificateRecordForm(request.POST, request.FILES)
-        certificate_number = request.POST.get('certificate_number')
-        uploaded_certificate = request.FILES.get('uploaded_certificate')
+        if form.is_valid():
+            certificate = form.save(commit=False)
+            certificate.printed_by = request.user
+            certificate.printed = True
+            certificate.save()
 
-        if CertificateRecord.objects.filter(certificate_number=certificate_number).exists():
-            messages.error(request, 'Certificate with this number already exists.')
-        elif not uploaded_certificate:
-            messages.error(request, 'Please upload a certificate.')
+            today = timezone.now().date()
+            daily_record, created = DailyRecord.objects.get_or_create(date=today)
+            daily_record.printed_certificates.add(certificate)
+
+            messages.success(request, 'Certificate added Successfully.')
+            return redirect('certificate_list')  
         else:
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Certificate added successfully.')
-                return redirect('certificate_list')
-            else:
-                messages.error(request, 'Form is not valid.')
+            messages.error(request, 'Form is not valid.')
     else:
         form = CertificateRecordForm()
 
@@ -129,7 +130,7 @@ def search_certificates(request):
     certificates = CertificateRecord.objects.filter(certificate_number__icontains=query)
     
     if not certificates:
-        messages.error(request, f'No certificates found for "{query}".')
+        messages.error(request, f'Certificate Not Found.')
         
     return render(request, 'certificates/certificate_list.html', {'certificates': certificates, 'query': query})
 
@@ -151,7 +152,6 @@ def edit_dispatch(request, dispatch_id):
         form = DispatchForm(instance=dispatch_record)
 
     return render(request, 'certificates/edit_dispatch.html', {'form': form})
-
 
 @login_required
 def delete_dispatch(request, dispatch_id):
