@@ -1,40 +1,39 @@
 {% extends 'certificates/base.html' %}
 
 {% block content %}
-
 <h1>Daily Records</h1>
 
 <form method="get" action="{% url 'search_daily_records' %}">
     <div class="form-group">
-        <input type="text" name="q" placeholder="Search certificate">
+        <input type="text" name="q" placeholder="Search dispatched certificates" value="{{ query }}">
         <button type="submit" class="btn btn-primary">Search</button>
     </div>
 </form>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Printed Certificates</th>
-            <th>Dispatched Certificates</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for record in daily_records %}
-        <tr>
-            <td>{{ record.date }}</td>
-            <td>
-                {% for certificate in record.printed_certificates.all %}
-                    {{ certificate.certificate_number }}<br>
-                {% endfor %}
-            </td>
-            <td>
-                {% for certificate in record.dispatched_certificates.all %}
-                    {{ certificate.certificate_number }}<br>
-                {% endfor %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<p>{{ debug_info }}</p>
+
+{% if daily_records %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Dispatched Certificates</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in daily_records %}
+            <tr>
+                <td>{{ record.date }}</td>
+                <td>
+                    {% for certificate in record.dispatched_certificates.all %}
+                        {{ certificate.certificate_number }}<br>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No records found.</p>
+{% endif %}
 {% endblock %}
