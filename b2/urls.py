@@ -13,6 +13,7 @@ urlpatterns = [
     path('certificates/daily-records/', views.daily_records, name='daily_records'),
     path('dispatch/edit/<int:dispatch_id>/', views.edit_dispatch, name='edit_dispatch'),
     path('dispatch/delete/<int:dispatch_id>/', views.delete_dispatch, name='delete_dispatch'),
+    path('search-dispatched-certificates/', views.search_dispatched_certificates, name='search_dispatched_certificates'),
 ]
 
 if settings.DEBUG:

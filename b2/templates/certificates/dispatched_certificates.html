@@ -3,6 +3,14 @@
 {% block content %}
 
 <h1>Dispatched Certificates</h1>
+
+<form method="get" action="{% url 'search_dispatched_certificates' %}">
+    <div class="form-group">
+        <input type="text" name="q" placeholder="Search certificate">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -30,4 +38,5 @@
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock %}
