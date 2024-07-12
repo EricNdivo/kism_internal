@@ -71,12 +71,13 @@ def dispatch_certificate(request, certificate_id):
             certificate.dispatched = True
             certificate.dispatched_by = request.user
             certificate.dispatch_date = timezone.now()
+            certificate.dispatched_phone = picked_by_phone
             certificate.save()
             
             dispatch_record = DispatchRecord(
                 certificate=certificate,
                 dispatched_by=request.user,
-                dispatch_phone=certificate.dispatched_phone, 
+                dispatched_phone= certificate.dispatched_phone, 
                 dispatch_date=timezone.now()
             )
             dispatch_record.save()
@@ -162,15 +163,3 @@ def delete_dispatch(request, dispatch_id):
         return redirect('dispatched_certificates')
 
     return render(request, 'certificates/confirm_delete_dispatch.html', {'dispatch_record': dispatch_record})
-
-@login_required
-def daily_records(request):
-    today = timezone.now().date()
-    daily_record, created = DailyRecord.objects.get_or_create(date=today)
-
-    context ={
-        'daily_record': daily_record,
-        'printed_certificates':  daily_record.printed_certificates.all(),
-        'dispatched_certificates': daily_record.dispatched_certificates.all(),
-    }
-    return render(request, 'certificates/daily_records.html', context)

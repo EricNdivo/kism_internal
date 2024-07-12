@@ -83,9 +83,9 @@ WSGI_APPLICATION = 'kism_internal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kism_internal',
-        'USER': 'eric',
-        'PASSWORD': 'sentinel90',
+        'NAME': '#',
+        'USER': '#',
+        'PASSWORD': '#',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
