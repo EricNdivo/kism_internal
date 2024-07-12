@@ -163,16 +163,3 @@ def delete_dispatch(request, dispatch_id):
         return redirect('dispatched_certificates')
 
     return render(request, 'certificates/confirm_delete_dispatch.html', {'dispatch_record': dispatch_record})
-
-'''@login_required
-def daily_records(request):
-    today = timezone.now().date()
-    daily_record, created = DailyRecord.objects.get_or_create(date=today)
-
-    context ={
-        'daily_record': daily_record,
-        'printed_certificates':  daily_record.printed_certificates.all(),
-        'dispatched_certificates': daily_record.dispatched_certificates.all(),
-    }
-    return render(request, 'certificates/daily_records.html', context)
-'''
