@@ -7,6 +7,7 @@ from .forms import CertificateRecordForm, DispatchForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django import forms
+from .utils import send_welcome_email
 from django.conf import settings
 import os
 
@@ -73,7 +74,9 @@ def dispatch_certificate(request, certificate_id):
             certificate.dispatch_date = timezone.now()
             certificate.dispatched_phone = picked_by_phone
             certificate.save()
-            
+
+            send_welcome_email(picked_by_email)
+
             dispatch_record = DispatchRecord(
                 certificate=certificate,
                 dispatched_by=request.user,
@@ -193,3 +196,4 @@ def delete_dispatch(request, dispatch_id):
         return redirect('dispatched_certificates')
 
     return render(request, 'certificates/confirm_delete_dispatch.html', {'dispatch_record': dispatch_record})
+
