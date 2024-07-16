@@ -7,10 +7,8 @@ from .forms import CertificateRecordForm, DispatchForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django import forms
+from .utils import send_welcome_email
 from django.conf import settings
-from .utils import send_dispatch_email
-from django.db import IntegrityError
-import email
 import os
 
 @login_required
@@ -46,7 +44,7 @@ def add_certificate(request):
                 messages.error(request, 'Form is not valid.')
     else:
         return render(request, 'certificates/add_certificate.html', {'form': form})
-   
+    
 @login_required
 def dispatch_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
@@ -77,41 +75,26 @@ def dispatch_certificate(request, certificate_id):
             certificate.dispatched_phone = picked_by_phone
             certificate.save()
 
-            try:
-                dispatch_record, created = DispatchRecord.objects.get_or_create(
-                    certificate=certificate,
-                    defaults={
-                        'dispatched_by': request.user,
-                        'dispatched_phone': certificate.dispatched_phone,
-                        'dispatch_date': timezone.now()
-                    }
-                )
-                
-                if not created:
-                    dispatch_record.dispatched_by = request.user
-                    dispatch_record.dispatched_phone = certificate.dispatched_phone
-                    dispatch_record.dispatch_date = timezone.now()
-                    dispatch_record.save()
+            send_welcome_email(picked_by_email)
+
+            dispatch_record = DispatchRecord(
+                certificate=certificate,
+                dispatched_by=request.user,
+                dispatched_phone= certificate.dispatched_phone, 
+                dispatch_date=timezone.now()
+            )
+            dispatch_record.save()
             
-                today = timezone.now().date()
-                daily_record, created = DailyRecord.objects.get_or_create(date=today)
-                daily_record.dispatched_certificates.add(certificate)
-                
-                
-                dispatch_records = [dispatch_record]
-                if picked_by_email:
-                    send_dispatch_email(picked_by_email, dispatch_records)
-                
-                messages.success(request, 'Certificate dispatched successfully.')
-                return redirect('certificate_list')
-            except IntegrityError:
-                messages.error(request, 'This certificate has already been dispatched.')
-                return redirect('certificate_list')
+            today = timezone.now().date()
+            daily_record, created = DailyRecord.objects.get_or_create(date=today)
+            daily_record.dispatched_certificates.add(certificate)
+            
+            messages.success(request, 'Certificate dispatched successfully.')
+            return redirect('certificate_list')
     else:
         form = DispatchForm()
     
     return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate, 'form': form})
-
 
 @login_required
 def dispatched_certificates(request):
