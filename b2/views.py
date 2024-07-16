@@ -7,8 +7,9 @@ from .forms import CertificateRecordForm, DispatchForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django import forms
-from .utils import send_welcome_email
+from .utils import send_dispatch_email
 from django.conf import settings
+from django.db import IntegrityError
 import os
 
 @login_required
@@ -71,6 +72,7 @@ def dispatch_certificate(request, certificate_id):
             
             certificate.dispatched = True
             certificate.dispatched_by = request.user
+            certificate.dispatched_to = picked_by_email
             certificate.dispatch_date = timezone.now()
             certificate.dispatched_phone = picked_by_phone
             certificate.save()
@@ -81,6 +83,7 @@ def dispatch_certificate(request, certificate_id):
                     defaults={
                         'dispatched_by': request.user,
                         'dispatched_phone': certificate.dispatched_phone,
+                        'dispatched_to': certificate.dispatched_to,
                         'dispatch_date': timezone.now()
                     }
                 )
@@ -147,7 +150,7 @@ def search_certificates(request):
     certificates = CertificateRecord.objects.filter(certificate_number__icontains=query)
     
     if not certificates:
-        messages.error(request, f'Certificate Not Found.')
+        messages.error(request, f'Certificate Not Found.', query)
         
     return render(request, 'certificates/certificate_list.html', {'certificates': certificates, 'query': query})
 
@@ -161,6 +164,10 @@ def search_dispatched_certificates(request):
         'dispatch_records': dispatch_records,
         'query': query,
     }
+
+    if not dispatch_records:
+        messages.error(request, f'Certificate Not Found.', query)
+       
 
     return render(request, 'certificates/dispatched_certificates.html', context)
 
@@ -179,6 +186,9 @@ def search_daily_records(request):
         'query': query,
         'debug_info': debug_info,
     } 
+    if not daily_records:
+        messages.error(request, f'Certificate Not Found', query)
+
     return render(request, 'certificates/daily_records.html', context)
 
 @login_required
