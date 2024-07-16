@@ -18,35 +18,6 @@ def certificate_list(request):
     return render(request, 'certificates/certificate_list.html', {'certificates': certificates})
 
 @login_required
-def add_certificate(request):
-    if request.method == 'POST':
-        form = CertificateRecordForm(request.POST, request.FILES)
-        certificate_number = request.POST.get('certificate_number')
-        uploaded_certificate = request.FILES.get('uploaded_certificate')
-
-        if CertificateRecord.objects.filter(certificate_number=certificate_number).exists():
-            messages.error(request, 'Certificate with this number already Exists')
-        elif not uploaded_certificate:
-            messages.error(request, 'Please upload a certificate')
-        else:
-            if form.is_valid():
-                certificate = form.save(commit=False)
-                certificate.printed_by = request.user
-                certificate.printed = True
-                certificate.save()
-
-                today = timezone.now().date()
-                daily_record, created = DailyRecord.objects.get_or_create(date=today)
-                daily_record.printed_certificates.add(certificate)
-
-                messages.success(request, 'Certificate added Successfully.')
-                return redirect('certificate_list')
-            else:
-                messages.error(request, 'Form is not valid.')
-    else:
-        return render(request, 'certificates/add_certificate.html', {'form': form})
-    
-@login_required
 def dispatch_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
     
@@ -168,7 +139,6 @@ def search_dispatched_certificates(request):
     if not dispatch_records:
         messages.error(request, f'Certificate Not Found.', query)
        
-
     return render(request, 'certificates/dispatched_certificates.html', context)
 
 def search_daily_records(request):
