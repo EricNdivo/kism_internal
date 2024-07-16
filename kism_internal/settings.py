@@ -140,4 +140,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'j.ericndivo@gmail.com'
-EMAIL_HOST_PASSWORD = 'aepc nnwf wauu tghg'
+EMAIL_HOST_PASSWORD = 'jxfh oklk euzs gyej'
