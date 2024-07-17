@@ -48,58 +48,77 @@ def add_certificate(request):
         return render(request, 'certificates/add_certificate.html', {'form': form})
     
 @login_required
+@login_required
 def dispatch_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
-    dispatch_records = DispatchRecord.objects.filter(certificate=certificate)
     
     if request.method == 'POST':
         form = DispatchForm(request.POST)
         if form.is_valid():
-            dispatched_to = form.cleaned_data.get('dispatched_to')
-            dispatched_phone = form.cleaned_data.get('dispatched_phone')
+            picked_by_email = form.cleaned_data.get('picked_by_email')
+            picked_by_phone = form.cleaned_data.get('picked_by_phone')
             picked_by_wells_fargo = form.cleaned_data.get('picked_by_wells_fargo')
-
-            certificate.dispatched = True
-            certificate.dispatched_to = dispatched_to
-            certificate.dispatched_phone = dispatched_phone
-            certificate.dispatched_by = request.user
-            certificate.picked_by = picked_by_wells_fargo
-            certificate.dispatch_date = timezone.now()
-
-            if dispatched_to:
-                certificate.picked_by = dispatched_to
-                certificate.dispatched_to = dispatched_to
-            elif dispatched_phone:
-                certificate.picked_by = dispatched_phone
-                certificate.dispatched_phone = dispatched_phone
+            
+            if picked_by_email:
+                certificate.picked_by = picked_by_email
+                certificate.dispatched_to = picked_by_email
+            elif picked_by_phone:
+                certificate.picked_by = picked_by_phone
+                certificate.dispatched_phone = picked_by_phone
             elif picked_by_wells_fargo:
-                certificate.picked_by = picked_by_wells_fargo
-                certificate.dispatched_to = picked_by_wells_fargo
+                certificate.picked_by = "Wells Fargo"
+                certificate.dispatched_to = "Wells Fargo"
             else:
                 messages.error(request, "Please provide either an email address, phone number, or select Wells Fargo.")
                 return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate, 'form': form})
             
+            certificate.dispatched = True
+            certificate.dispatched_by = request.user
+            certificate.dispatched_to = picked_by_email
+            certificate.dispatch_date = timezone.now()
+            certificate.dispatched_phone = picked_by_phone
             certificate.save()
 
-            for record in dispatch_records:
-                record.dispatched_to = certificate.dispatched_to
-                record.dispatched_phone = certificate.dispatched_phone
-                record.picked_by_wells_fargo = certificate.picked_by_wells_fargo
-                record.save()
+            try:
+                dispatch_record, created = DispatchRecord.objects.get_or_create(
+                    certificate=certificate,
+                    defaults={
+                        'dispatched_by': request.user,
+                        'dispatched_phone': certificate.dispatched_phone,
+                        'dispatched_to': certificate.dispatched_to,
+                        'dispatch_date': timezone.now()
+                    }
+                )
+                
+                if not created:
+                    dispatch_record.dispatched_by = request.user
+                    dispatch_record.dispatched_phone = certificate.dispatched_phone
+                    dispatch_record.dispatch_date = timezone.now()
+                    dispatch_record.save()
+            
+                today = timezone.now().date()
+                daily_record, created = DailyRecord.objects.get_or_create(date=today)
+                daily_record.dispatched_certificates.add(certificate)
+                
+                
+                dispatch_records = [dispatch_record]
+                try:
+                    if picked_by_email:
+                        send_dispatch_email(picked_by_email, dispatch_records)
+                    
+                    messages.success(request, 'Certificate dispatched successfully.')
+                    return redirect('certificate_list')
 
-            today = timezone.now().date()
-            daily_record, created = DailyRecord.objects.get_or_create(date=today)
-            daily_record.dispatched_certificates.add(certificate)
+                except Exception as e:
+                    messages.error(request, 'An error occurred while sending the dispatch email.')
+                    print(f"Error: {e}")
+                    return redirect('certificate_list')
 
-            if dispatched_to:
-                send_dispatch_email(dispatched_to, dispatch_records)
-
-            messages.success(request, 'Certificate dispatched successfully.')
-            return redirect('certificate_list')
-
+            except IntegrityError:
+                messages.error(request, 'This certificate has already been dispatched.')
+                return redirect('certificate_list')
     else:
-        form = DispatchForm()
-    
+        form = DispatchForm() 
     return render(request, 'certificates/dispatch_certificate.html', {'certificate': certificate, 'form': form})
 @login_required
 def dispatched_certificates(request):
@@ -176,19 +195,6 @@ def edit_dispatch(request, pk):
     return render(request, 'certificates/dispatch_certificate.html', context)
 
 
-'''def edit_dispatch(request, dispatch_id):
-    dispatch_record = get_object_or_404(DispatchRecord, id=dispatch_id)
-
-    if request.method == 'POST':
-        form = DispatchForm(request.POST, instance=dispatch_record)
-        if form.is_valid():
-            form.save()
-            return redirect('dispatched_certificates')
-    else:
-        form = DispatchForm(instance=dispatch_record)
-
-    return render(request, 'certificates/edit_dispatch.html', {'form': form})
-'''
 @login_required
 def delete_dispatch(request, dispatch_id):
     dispatch_record = get_object_or_404(DispatchRecord, id=dispatch_id)
