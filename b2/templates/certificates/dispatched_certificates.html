@@ -26,7 +26,7 @@
         {% for dispatch_record in dispatch_records %}
         <tr>
             <td>{{ dispatch_record.certificate.certificate_number }}</td>
-            <td>{{ dispatch_record.certificate.dispatched_to }}</td>
+            <td>{{ dispatch_record.dispatched_to }}</td>
             <td>{{ dispatch_record.dispatched_phone }}</td>
             <td>{{ dispatch_record.dispatched_by.username }}</td>
             <td>{{ dispatch_record.dispatch_date }}</td>
