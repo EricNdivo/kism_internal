@@ -132,13 +132,22 @@ def view_certificate(request, certificate_id):
 
 def search_certificates(request):
     query = request.GET.get('q')
-    certificates = CertificateRecord.objects.filter(certificate_number__icontains=query)
-    
-    if not certificates:
-        messages.error(request, f'Certificate Not Found.', query)
-        
-    return render(request, 'certificates/certificate_list.html', {'certificates': certificates, 'query': query})
 
+    if not query:
+        messages.error(request, 'Error: Please enter a search query.')
+        return render(request, 'certificates/certificate_list.html')
+
+    if not query.isdigit():
+        messages.error(request, 'Error: Only numbers are allowed in the search query.')
+        return render(request, 'certificates/certificate_list.html', {'query': query})
+
+    certificates = CertificateRecord.objects.filter(certificate_number__icontains=query)
+
+    if not certificates:
+        messages.error(request, f'Certificate Not Found for query: {query}')
+
+    return render(request, 'certificates/certificate_list.html', {'certificates': certificates, 'query': query})
+    
 def search_dispatched_certificates(request):
     query = request.GET.get('q')
 
@@ -150,6 +159,10 @@ def search_dispatched_certificates(request):
         'query': query,
     }
 
+    if not query:
+        messages.error(request, 'Error: Please enter a search query.')
+        return render(request, 'certificates/certificate_list.html')
+
     if not dispatch_records:
         messages.error(request, f'Certificate Not Found.', query)
        
@@ -157,6 +170,10 @@ def search_dispatched_certificates(request):
 
 def search_daily_records(request):
     query = request.GET.get('q', '').strip()
+    if not query:
+        messages.error(request, 'Error: Please enter a search query.')
+        return render(request, 'certificates/certificate_list.html')
+
     if query:
         daily_records = DailyRecord.objects.filter(
             dispatched_certificates__certificate_number__icontains=query
