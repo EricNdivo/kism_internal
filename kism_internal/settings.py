@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'kism_internal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kism_internal',
-        'USER': 'eric',
-        'PASSWORD': 'sentinel90',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': '#',
+        'USER': '#',
+        'PASSWORD': '#',
+        'HOST': '#',
+        'PORT': '#',
     }
 }
 
@@ -139,5 +139,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'j.ericndivo@gmail.com'
-EMAIL_HOST_PASSWORD = 'jxfh oklk euzs gyej'
+EMAIL_HOST_USER = '#'
+EMAIL_HOST_PASSWORD = '#'

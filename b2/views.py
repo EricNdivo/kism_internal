@@ -118,28 +118,6 @@ def dispatched_certificates(request):
     dispatch_records = DispatchRecord.objects.all()
     return render(request, 'certificates/dispatched_certificates.html', {'dispatch_records': dispatch_records})
 
-@login_required
-def add_certificate(request):
-    if request.method == 'POST':
-        form = CertificateRecordForm(request.POST, request.FILES)
-        if form.is_valid():
-            certificate = form.save(commit=False)
-            certificate.printed_by = request.user
-            certificate.printed = True
-            certificate.save()
-
-            today = timezone.now().date()
-            daily_record, created = DailyRecord.objects.get_or_create(date=today)
-            daily_record.printed_certificates.add(certificate)
-
-            messages.success(request, 'Certificate added Successfully.')
-            return redirect('certificate_list')  
-        else:
-            messages.error(request, 'Form is not valid.')
-    else:
-        form = CertificateRecordForm()
-
-    return render(request, 'certificates/add_certificate.html', {'form': form})
 
 def view_certificate(request, certificate_id):
     certificate = get_object_or_404(CertificateRecord, id=certificate_id)
