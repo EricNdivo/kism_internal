@@ -9,6 +9,7 @@ from django.contrib import messages
 from django import forms
 from .utils import send_dispatch_email
 from django.conf import settings
+from django.http import Http404
 from django.db import IntegrityError
 import os
 
@@ -126,8 +127,19 @@ def dispatched_certificates(request):
     return render(request, 'certificates/dispatched_certificates.html', {'dispatch_records': dispatch_records})
 
 
+@login_required
 def view_certificate(request, certificate_id):
-    certificate = get_object_or_404(CertificateRecord, id=certificate_id)
+    try:
+        certificate = get_object_or_404(CertificateRecord, id=certificate_id)
+        
+        if not os.path.exists(certificate.uploaded_certificate.path):
+            messages.error(request, "Certificate file not found.")
+            return redirect('certificate_list')
+
+    except CertificateRecord.DoesNotExist:
+        messages.error(request, "Certificate not found.")
+        return redirect('certificate_list')
+
     return render(request, 'certificates/view_certificate.html', {'certificate': certificate})
 
 def search_certificates(request):
@@ -147,7 +159,7 @@ def search_certificates(request):
         messages.error(request, f'Certificate Not Found for query: {query}')
 
     return render(request, 'certificates/certificate_list.html', {'certificates': certificates, 'query': query})
-    
+
 def search_dispatched_certificates(request):
     query = request.GET.get('q')
 
@@ -200,12 +212,20 @@ def daily_records(request):
 @login_required
 def edit_dispatch(request, dispatch_id):
     dispatch_record = get_object_or_404(DispatchRecord, id=dispatch_id)
+    certificate = dispatch_record.certificate
 
     if request.method == 'POST':
         form = DispatchForm(request.POST, instance=dispatch_record)
         if form.is_valid():
-            form.save()
+            dispatch_record = form.save(commit=False)
+            certificate.dispatched_to = form.cleaned_data.get('picked_by_email')
+            certificate.dispatched_phone = form.cleaned_data.get('picked_by_phone')
+            certificate.save()
+            dispatch_record.save()
+            messages.success(request, 'Dispatch record updated successfully.')
             return redirect('dispatched_certificates')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = DispatchForm(instance=dispatch_record)
 
@@ -222,3 +242,11 @@ def delete_dispatch(request, dispatch_id):
 
     return render(request, 'certificates/confirm_delete_dispatch.html', {'dispatch_record': dispatch_record})
 
+@login_required
+def delete_certificate(request, certificate_id):
+    certificate = get_object_or_404(CertificateRecord, id=certificate_id)
+    if request.method == 'POST':
+        certificate.delete()
+        messages.success(request, "Certificate deleted successfully.")
+        return redirect('certificate_list')
+    return render(request, 'certificates/confirm_delete_certificate.html', {'certificate': certificate})

@@ -4,7 +4,8 @@
 <h1>Dispatch Certificate {{ certificate.certificate_number }}</h1>
 <form method="post">
     {% csrf_token %}
-    <div class="form-group">
+    {{ form }}
+    <!----<div class="form-group">
         <label for="picked_up_by">Picked Up By</label>
         <input type="text" class="form-control" id="picked_up_by" name="picked_up_by" required>
     </div>
@@ -22,7 +23,7 @@
             <option value="">Select Option</option>
             <option value="wellsfargo">Wells Fargo</option>
         </select>
-    </div>
+    </div>---->
     <button type="submit" class="btn btn-success">Dispatch</button>
     <a href="{% url 'certificate_list' %}" class="btn btn-secondary">Cancel</a>
 </form>
