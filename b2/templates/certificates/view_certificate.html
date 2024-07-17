@@ -57,7 +57,8 @@
 {% if certificate.uploaded_certificate %}
     <h3>Certificate File</h3>
     <a href="{{ certificate.uploaded_certificate.url }}" class="btn btn-primary" target="_blank">View Certificate</a>
-{% else %}
+    <a href="{% url 'delete_certificate' certificate.id %}" class="btn btn-danger">Delete Certificate</a>
+    {% else %}
     <p>No file available.</p>
 {% endif %}
 {% endblock %}
