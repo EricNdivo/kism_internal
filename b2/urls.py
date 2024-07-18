@@ -16,6 +16,8 @@ urlpatterns = [
     path('delete/<int:certificate_id>/', views.delete_certificate, name='delete_certificate'),
     path('search-dispatched-certificates/', views.search_dispatched_certificates, name='search_dispatched_certificates'),
     path('search_daily_records', views.search_daily_records, name='search_daily_records'),
+    path('generate_report', views.generate_report, name='generate_report'),
+    path('generate_dispatched_report', views.generate_dispatched_report, name='generate_dispatched_report'),
 ]
 
 if settings.DEBUG:
