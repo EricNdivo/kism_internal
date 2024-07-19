@@ -9,7 +9,9 @@ from django.contrib import messages
 from django import forms
 from .utils import send_dispatch_email
 from django.conf import settings
-from django.http import Http404
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
+from django.http import Http404, HttpResponse
 from django.db import IntegrityError
 import os
 
@@ -162,6 +164,14 @@ def search_certificates(request):
 
 def search_dispatched_certificates(request):
     query = request.GET.get('q')
+    
+    if not query:
+        messages.error(request, 'Error: Please enter a search query.')
+        return render(request, 'certificates/certificate_list.html')
+
+    if not query.isdigit():
+        messages.error(request, 'Error: Only numbers are allowed in the search query.')
+        return render(request, 'certificates/certificate_list.html', {'query': query})
 
     dispatch_records = DispatchRecord.objects.filter(
         certificate__certificate_number__icontains=query
@@ -182,9 +192,14 @@ def search_dispatched_certificates(request):
 
 def search_daily_records(request):
     query = request.GET.get('q', '').strip()
+    
     if not query:
         messages.error(request, 'Error: Please enter a search query.')
         return render(request, 'certificates/certificate_list.html')
+    
+    if not query.isdigit():
+        messages.error(request, 'Error: Only numbers are allowed in the search query.')
+        return render(request, 'certificates/certificate_list.html', {'query': query})
 
     if query:
         daily_records = DailyRecord.objects.filter(
@@ -250,3 +265,30 @@ def delete_certificate(request, certificate_id):
         messages.success(request, "Certificate deleted successfully.")
         return redirect('certificate_list')
     return render(request, 'certificates/confirm_delete_certificate.html', {'certificate': certificate})
+
+@login_required
+def generate_report(request):
+    
+    return HttpResponse('Feature in development...')
+
+@login_required
+def generate_dispatched_report(request):
+    
+    return HttpResponse('Feature in development...')
+
+class CustomPasswordResetView(auth_views.PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+    success_url = reverse_lazy('password_reset_done')
+
+class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'
+
+class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+
+class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'

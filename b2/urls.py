@@ -16,6 +16,14 @@ urlpatterns = [
     path('delete/<int:certificate_id>/', views.delete_certificate, name='delete_certificate'),
     path('search-dispatched-certificates/', views.search_dispatched_certificates, name='search_dispatched_certificates'),
     path('search_daily_records', views.search_daily_records, name='search_daily_records'),
+    path('generate_report', views.generate_report, name='generate_report'),
+    path('generate_dispatched_report', views.generate_dispatched_report, name='generate_dispatched_report'),
+    path('password_reset/', views.CustomPasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', views.CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', views.CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', views.CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+
 ]
 
 if settings.DEBUG:

@@ -1,39 +1,54 @@
 {% extends 'certificates/base.html' %}
 
 {% block content %}
-<h1>Daily Records</h1>
+<div class="container mt-5">
+    <h1 class="mb-4">Daily Records</h1>
 
-<form method="get" action="{% url 'search_daily_records' %}">
-    <div class="form-group">
-        <input type="text" name="q" placeholder="Search dispatched certificates" value="{{ query }}">
-        <button type="submit" class="btn btn-primary">Search</button>
+    <form method="get" action="{% url 'search_daily_records' %}" class="form-inline mb-4">
+        <div class="input-group w-100">
+            <input type="text" name="q" placeholder="Search dispatched certificates" value="{{ query }}" class="form-control">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-between mb-4">
+        <button onclick="window.location.href='{% url 'generate_report' %}'" class="btn btn-success">Generate Printed Certificates Report</button>
+        <button onclick="window.location.href='{% url 'generate_dispatched_report' %}'" class="btn btn-info">Generate Dispatched Certificates Report</button>
     </div>
-</form>
 
-<p>{{ debug_info }}</p>
+    <p>{{ debug_info }}</p>
 
-{% if daily_records %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Dispatched Certificates</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in daily_records %}
-            <tr>
-                <td>{{ record.date }}</td>
-                <td>
-                    {% for certificate in record.dispatched_certificates.all %}
-                        {{ certificate.certificate_number }}<br>
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No records found.</p>
-{% endif %}
+    {% if daily_records %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Dispatched Certificates</th>
+                    <th>Printed Certificates</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in daily_records %}
+                <tr>
+                    <td>{{ record.date }}</td>
+                    <td>
+                        {% for certificate in record.dispatched_certificates.all %}
+                            {{ certificate.certificate_number }}<br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for certificate in record.printed_certificates.all %}
+                            {{ certificate.certificate_number }}<br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No records found.</p>
+    {% endif %}
+</div>
 {% endblock %}
