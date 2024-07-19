@@ -1,11 +1,9 @@
-<p>This is a Dispatch Confirmation Email sent to:</p>
+<p>This is a Dispatch Confirmation Email that :</p>
 {% for dispatch_record in dispatch_records %}
-    <p>{{ dispatch_record.dispatched_by }}</p>
-{% endfor %}
-
-<p>Certificate Dispatched to Phone:</p>
-{% for dispatch_record in dispatch_records %}
-    <p>{{ dispatch_record.dispatched_phone }}</p>
-{% endfor %}
-
-<p>Thank you.</p>
+<p>Certificate ID {{ dispatch_record.certificate_id }} has been </p> 
+<p>Dispatched to Email: {{ dispatch_record.dispatched_to }}</p>
+<p>Certificate Dispatched to Phone: {{ dispatch_record.dispatched_phone }}</p>
+<p>at {{ dispatch_record.dispatch_date }}</p>
+   
+{% endfor %} </p>
+Thank you.

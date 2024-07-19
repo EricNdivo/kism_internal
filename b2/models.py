@@ -26,6 +26,7 @@ class DispatchRecord(models.Model):
     dispatched_by = models.ForeignKey(User, on_delete=models.CASCADE)
     dispatched_to = models.CharField(max_length=100, blank=True)
     dispatched_phone = models.CharField(max_length=15, blank=True)
+    picked_by_wells_fargo = models.BooleanField(blank=True, null=False, default=False)
     dispatch_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
