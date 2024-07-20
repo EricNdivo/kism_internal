@@ -17,7 +17,7 @@
         <button onclick="window.location.href='{% url 'generate_report' %}'" class="btn btn-success">Generate Printed Certificates Report</button>
         <button onclick="window.location.href='{% url 'generate_dispatched_report' %}'" class="btn btn-info">Generate Dispatched Certificates Report</button>
     </div>
-
+    
     <p>{{ debug_info }}</p>
 
     {% if daily_records %}
