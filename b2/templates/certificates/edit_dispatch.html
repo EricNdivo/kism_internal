@@ -1,7 +1,7 @@
 {% extends 'certificates/base.html' %}
 
 {% block content %}
-<h1>Dispatch Certificate {{ certificate.certificate_number }}</h1>
+<h1>Edit Dispatch Record {{ certificate.certificate_number }}</h1>
 <form method="post">
     {% csrf_token %}
     <div class="form-group">
