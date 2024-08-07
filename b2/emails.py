@@ -6,7 +6,7 @@ def send_dispatch_email(recipient_email, dispatch_records):
     subject = 'Certificate Dispatch Notification'
     html_message = render_to_string('certificates/dispatch_email.html', {'dispatch_records': dispatch_records})
     plain_message = strip_tags(html_message)
-    from_email = 'j.ericndivo@gmail.com'
+    from_email = 'lisanzatabitha@gmail.com'
     
     try:
         send_mail(

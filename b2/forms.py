@@ -10,6 +10,7 @@ class CertificateRecordForm(forms.ModelForm):
         widgets = {
             'printed': forms.Select(choices=[(True, 'Yes'), (False, 'No')])
         }
+        
 class DispatchForm(forms.ModelForm):
     class Meta:
         model = DispatchRecord

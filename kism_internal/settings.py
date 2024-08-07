@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'kism_internal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': '#',
-        'USER': '#',
-        'PASSWORD': '#',
-        'HOST': '#',
-        'PORT': '#',
+        'NAME': 'kisminternal3',
+        'USER': 'postgres',
+        'PASSWORD': 'lisanza123',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
